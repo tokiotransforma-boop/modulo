@@ -1831,6 +1831,12 @@ function viewEntrada(){
     if(!UI.proEntrada || typeof UI.proEntrada !== "object") UI.proEntrada = { viewOpen:false, expanded:{} };
     const pe = UI.proEntrada;
 
+    // Ticket B — modo de entrada (Manual / IA - Próximamente)
+    ensureStateUpgrade();
+    if(!state.ui) state.ui = {};
+    if(!state.ui.proInputMode) state.ui.proInputMode = "manual";
+    const setProInputMode = (m) => { state.ui.proInputMode = m; save(state); render(); };
+
     const openView = () => { pe.viewOpen = true; render(); };
     const closeView = () => { pe.viewOpen = false; render(); };
     const expandAll = () => { pe.expanded.plano = true; pe.expanded.tipo = true; render(); };
@@ -1858,6 +1864,16 @@ function viewEntrada(){
 
     const tipoPanel = proPanel(pe, "tipo", "Tipo de encargo", [
       el("div", { class:"muted" }, "Elige una opción. Generaremos una plantilla base y luego podrás quitar/poner capítulos y partidas."),
+      el("div", { class:"hr" }),
+
+      // Ticket B — iniciar encargo con IA (Próximamente)
+      el("div", { class:"label", style:"margin-top:6px" }, "Modo de encargo"),
+      el("div", { class:"row", style:"gap:8px; align-items:center; flex-wrap:wrap;" }, [
+        el("button", { class: "btn " + (state.ui.proInputMode === "manual" ? "primary" : "ghost"), onclick: () => setProInputMode("manual") }, "Manual"),
+        el("button", { class:"btn danger", disabled:true, title:"Próximamente" }, "Con IA (Próximamente)"),
+        el("button", { class:"btn ghost", disabled:true, title:"Próximamente" }, "Ir a IA"),
+      ]),
+      el("div", { class:"small", style:"margin-top:8px" }, "Con IA, podrás describir el encargo o subir planos y la IA preparará mediciones y partidas (Próximamente)."),
       el("div", { class:"hr" }),
       el("div", { class:"cards" }, [
         el("div", { class:"choice", onclick: () => { state.tipoObra = "integral"; state.ui.proTrabajo = "all"; save(state); render(); } }, [
